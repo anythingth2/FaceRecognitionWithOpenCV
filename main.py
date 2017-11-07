@@ -1,8 +1,10 @@
 import cv2
-import os
+import os, sys
 import numpy as np
 import random
-
+import faceRecognitionTraining as training
+import json
+from PIL import Image
     
 CLASSIFIER_PATH = os.getcwd()+'\\etc\\haarcascades\\haarcascade_frontalface_default.xml'
 MODEL_PATH = os.getcwd() + '\model.xml'
@@ -45,46 +47,67 @@ def getFace(img,faces = None,hasFace = False):
 
 def recognize(face):
     who,accuracy = recognizer.predict(face)
-    print(who,accuracy)
+    # print(who,accuracy)
     return (who,accuracy)
 
 
-def saveDataSet(path,number,face):
-    name = path+'\\subject'+str(number)+'.'+str(random.randrange(0,1000000))+'.png'
-    cv2.imwrite(name,face)
-    print(name)
+# def saveImgDataSet(path,number,face):
+#     name = path+'\\subject'+str(number)+'.'+str(random.randrange(0,1000000))+'.png'
+#     cv2.imwrite(name,face)
+#     print(name)
     
+def main(cam,isSaveDataSet=False):
+    names = {}
+    with open('datasets.json','r') as f:
+        names = json.load(f)
 
-
-if __name__ == '__main__':
-    
-    cam = cv2.VideoCapture(0)
-    isSaveDataSet = False
     if isSaveDataSet:
-        DATESET_NUMBER = int(input('WHO ARE YOU : '))
-        DATASET_NEW_PATH = os.path.join(DATASET_PATH,str(DATESET_NUMBER))
+        DATASET_NUMBER = names['lastnumber'] + 1
+        DATASET_NAME = str(input("Name : "))
+        DATASET_NEW_PATH = os.path.join(DATASET_PATH,str(DATASET_NUMBER))
+        
         if not os.path.exists(DATASET_NEW_PATH):
             os.makedirs(DATASET_NEW_PATH)
-
+    i=0
     while cam.isOpened():
         _,frame = cam.read()
         faces = faceDetection(frame)
 
         if faces != ():
-            # print(faces)
             faces_img = getFace(frame,faces,True)
-            
-            # print(face)
-            # cv2.imshow('face',face)
+            found = []
             for face_img in faces_img:
                 gray_faces_img = cv2.cvtColor(face_img,cv2.COLOR_BGR2GRAY)
                 if isSaveDataSet:
-                    saveDataSet(DATASET_NEW_PATH,DATESET_NUMBER,gray_faces_img)
-                recognize(gray_faces_img)
-
+                    # cv2.imwrite(DATASET_NEW_PATH+'\\subject'+str(DATASET_NUMBER)+'.'+str(i)+'.png',gray_faces_img)
+                    Image.fromarray(gray_faces_img,mode='L').save(DATASET_NEW_PATH+'\\subject'+str(DATASET_NUMBER)+'.'+str(i)+'.gif')
+                    i+=1
+                number, conf = recognize(gray_faces_img)
+                found.append((names[str(number)],conf))
+            print(found)
             frame = drawRec(frame,faces)
 
         cv2.imshow('Face',frame)
         if cv2.waitKey(1) == ord('q'):
+
             break
 
+    if isSaveDataSet:
+        names[str(DATASET_NUMBER)] = DATASET_NAME
+        names['lastnumber'] = DATASET_NUMBER 
+        json.dump(names,open('datasets.json','w+'),indent=4)
+        print('collecting dataset DONE!')
+
+
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+
+    isSaveDataSet = False
+    if len(args) != 0:
+        if args[0] in ['-c','collectDataSet','collectdataset']:
+            isSaveDataSet = True
+
+    cam = cv2.VideoCapture(0)
+
+    main(cam,isSaveDataSet)
