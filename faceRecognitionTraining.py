@@ -3,6 +3,7 @@ import numpy as np
 import os
 import main
 from PIL import Image
+import time
 
 recognizer =  cv2.face.LBPHFaceRecognizer_create()
 
@@ -23,15 +24,18 @@ def get_image_and_label(path):
             img = np.array(img,'uint8')
         # cv2.imshow('fa',img)
         # cv2.waitKey(0)
-            if img.size == 0:breaks
+            if img.size == 0:break
             
-            face = main.getFace(img)
-            if len(face) == 1:
-                face = main.getFace(img)[0]
-            else:continue
-            
-            if len(face.shape) == 3:
-                face = cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
+            # face = main.getFace(img[0])
+            # if len(face) == 1:
+            #     face = main.getFace(img)
+            # else:continue
+            # if face == []:
+                # continue
+            if len(img.shape) == 3:
+                face = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+            else:
+                face = img
 
             imgs.append(face)
             labels.append(number)
@@ -41,9 +45,13 @@ def get_image_and_label(path):
 def train():
     path = 'datasets\\newfaces'
     imgs,labels = get_image_and_label(path)
-
+    print('start training model')
+    time.sleep(0.5)
     recognizer.train(imgs,np.array(labels))
+    print('training model end')
+    print('saving model....')
     recognizer.write('model.xml')
+    print('saving model DONE!')
 if __name__ == '__main__':
     train()
 

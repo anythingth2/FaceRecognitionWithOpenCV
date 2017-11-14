@@ -1,5 +1,15 @@
 {
-    "lastnumber": 206,
-    "205": "Chai",
-    "206": "Jane"
+    "lastnumber": 226,
+    "224": {
+        "name": "Chai",
+        "door": 1
+    },
+    "225": {
+        "name": "Chai2",
+        "door": 2
+    },
+    "226": {
+        "name": "Chai3",
+        "door": 3
+    }
 }
