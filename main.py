@@ -15,6 +15,7 @@ MODEL_PATH = os.getcwd() + '\model.xml'
 DATASET_PATH = os.getcwd()+'\\datasets\\newfaces'
 
 SERVER_URL = 'http://192.168.0.138:5000'
+SERVER_DOOR_URL = 'http://192.168.0.138:5001'
 VIDEOSTREAM_PATH = '/videoStream'
 OPENDOOR_PATH = '/open'
 
@@ -101,7 +102,7 @@ def loadModel(recogniz):
 
 
 def openDoor(doorId):
-    doorReq = requests.post(SERVER_URL+OPENDOOR_PATH,params = {'door':doorId})
+    doorReq = requests.get(SERVER_DOOR_URL+OPENDOOR_PATH,params = {'door':doorId})
 # def saveImgDataSet(path,number,face):
 #     name = path+'\\subject'+str(number)+'.'+str(random.randrange(0,1000000))+'.png'
 #     cv2.imwrite(name,face)
