@@ -40,7 +40,7 @@ def openDoor(index):
     GPIO.output(doorPins[index],GPIO.HIGH)
     time.sleep(0.1)
     GPIO.output(doorPins[index],GPIO.LOW)
-    time.sleep(5)
+    time.sleep(3)
     print('open {}'.format((index)))
     isOpening = False
 @app.route('/open',methods=['GET'])

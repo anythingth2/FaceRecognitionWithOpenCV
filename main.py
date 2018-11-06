@@ -15,7 +15,7 @@ MODEL_PATH = os.getcwd() + '\model.xml'
 DATASET_PATH = os.getcwd()+'\\datasets\\newfaces'
 
 SERVER_URL = 'http://192.168.1.26:5000'
-SERVER_DOOR_URL = 'http://192.168.0.26:5001'
+SERVER_DOOR_URL = 'http://192.168.1.26:5000'
 VIDEOSTREAM_PATH = '/vid'
 OPENDOOR_PATH = '/open'
 
@@ -99,9 +99,13 @@ def loadModel(recogniz):
         exit()
     print('Starting!')
 
-
+isDelay = False
 def openDoor(doorId):
+    global isDelay
+    isDelay = True
     doorReq = requests.get(SERVER_DOOR_URL+OPENDOOR_PATH,params = {'door':doorId})
+    time.sleep(4)
+    isDelay = False
 # def saveImgDataSet(path,number,face):
 #     name = path+'\\subject'+str(number)+'.'+str(random.randrange(0,1000000))+'.png'
 #     cv2.imwrite(name,face)
@@ -166,6 +170,7 @@ def main(cam,isSaveDataSet=False):
         print('collecting dataset DONE!')
 
 def mainWithSocket(isSaveDataSet = False):
+    global isDelay
     names = loadDatasetID()
     if isSaveDataSet:
         DATASET_NUMBER = names['lastnumber'] + 1
@@ -231,12 +236,15 @@ def mainWithSocket(isSaveDataSet = False):
                 pass
                 ID,conf = recognize(gray_face_img)
                 print(names[str(ID)],conf)
-                if conf < 60:
+                if conf < 75:
                     frame = drawRec(frame,face,names[str(ID)]['name']+' '+str(conf))
-                    print('open ',names[str(ID)]['door'])
-                    openDoorThread = Thread(target= openDoor,args=(names[str(ID)]['door'],))
-                    openDoorThread.daemon = True
-                    openDoorThread.start()
+                    
+                    if not isDelay:
+
+                        print('open ',names[str(ID)]['door'])
+                        openDoorThread = Thread(target= openDoor,args=(names[str(ID)]['door'],))
+                        openDoorThread.daemon = True
+                        openDoorThread.start()
                 else:
                     frame = drawRec(frame,face,color=(0,0,255))
                 
