@@ -51,10 +51,10 @@ def openDoorApi():
 @app.route('/image')
 def image():
     ret, frame = cam.read()
-    if(not ret):
+    if not ret:
         return 'fail to capture image'
     ret, buff = cv2.imencode('.jpg',frame)
-    if(not ret):
+    if not ret:
         return 'fail to encode'
     return buff.tobytes()
 
