@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template,request, Response
 import cv2
 cam = cv2.VideoCapture(0)
 app = Flask(__name__)
@@ -20,6 +20,11 @@ def index():
 @app.route('/vid')
 def video_feed():
     return Response(generateFrame(),mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/open',methods=['GET'])
+def openDoor():
+    doorIndex = request.args.get('door',type = int)
+    print('open at {}'.format(doorIndex))
+    return Response()
 @app.route('/image')
 def image():
     ret, frame = cam.read()
@@ -29,6 +34,7 @@ def image():
     if(not ret):
         return 'fail to encode'
     return buff.tobytes()
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0',threaded=True)
 
