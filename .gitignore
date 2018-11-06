@@ -1,1 +1,7 @@
 /datasets/*
+model.xml
+*.pyc
+__pycache__/faceRecognitionTraining.cpython-36.pyc
+model.xml
+main.pyc
+faceRecognitionTraining.pyc

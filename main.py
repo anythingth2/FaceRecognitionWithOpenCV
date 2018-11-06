@@ -14,9 +14,9 @@ CLASSIFIER_PATH = os.getcwd()+'\\etc\\haarcascades\\haarcascade_frontalface_defa
 MODEL_PATH = os.getcwd() + '\model.xml'
 DATASET_PATH = os.getcwd()+'\\datasets\\newfaces'
 
-SERVER_URL = 'http://192.168.0.138:5000'
-SERVER_DOOR_URL = 'http://192.168.0.138:5001'
-VIDEOSTREAM_PATH = '/videoStream'
+SERVER_URL = 'http://192.168.1.26:5000'
+SERVER_DOOR_URL = 'http://192.168.0.26:5001'
+VIDEOSTREAM_PATH = '/vid'
 OPENDOOR_PATH = '/open'
 
 faceCascade = cv2.CascadeClassifier(CLASSIFIER_PATH)
@@ -46,8 +46,7 @@ def drawRec(img,point,text=None,color=None):
 
 
 def faceDetection(img):
-    # print(type(img))
-    print(img)
+    
     if len(img.shape) == 3:
         img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     return faceCascade.detectMultiScale(
@@ -231,9 +230,8 @@ def mainWithSocket(isSaveDataSet = False):
             else:
                 pass
                 ID,conf = recognize(gray_face_img)
-                # print(names[str(ID),conf])
                 print(names[str(ID)],conf)
-                if conf < 90:
+                if conf < 60:
                     frame = drawRec(frame,face,names[str(ID)]['name']+' '+str(conf))
                     print('open ',names[str(ID)]['door'])
                     openDoorThread = Thread(target= openDoor,args=(names[str(ID)]['door'],))
