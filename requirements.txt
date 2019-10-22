@@ -12,7 +12,7 @@ django-cors-headers==2.1.0
 django-extensions==1.8.1
 django-filter==1.0.4
 django-rest-swagger==2.1.2
-djangorestframework==3.6.3
+djangorestframework==3.9.1
 djangorestframework-jwt==1.11.0
 Flask==0.12.2
 google-assistant-sdk==0.3.3
